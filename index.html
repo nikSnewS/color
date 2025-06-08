@@ -298,16 +298,116 @@
     secretAnswer.style.fontSize = '0px';
 
     logo.addEventListener('click', () => {
-      secretAnswer.style.color = '#1C2416';
-      secretAnswer.style.fontSize = '14px';
-      secretAnswer.scrollIntoView({behavior: 'smooth'});
+  const shpargalkaHTML = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Мой экзаменационный сайт</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f4f4f4;
+      color: #333;
+    }
+    header, footer {
+      background-color: #ddd;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+    main {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    section {
+      margin-bottom: 25px;
+    }
+    h1, h2 {
+      margin-bottom: 10px;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin-top: 10px;
+    }
+    p {
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
 
-      if (secretTimeout) clearTimeout(secretTimeout);
-      secretTimeout = setTimeout(() => {
-        secretAnswer.style.color = 'transparent';
-        secretAnswer.style.fontSize = '0px';
-      }, 5000);
-    });
+<header>
+  Мой Экзаменационный Сайт
+</header>
+
+<main>
+
+  <section id="intro">
+    <h1>Заголовок первого блока</h1>
+    <p>Тут можно написать вводный текст. Например, о чем сайт, что будет дальше.</p>
+    <img src="https://via.placeholder.com/600x300" alt="Пример изображения" />
+  </section>
+
+  <section id="info">
+    <h2>Второй блок с информацией</h2>
+    <p>Еще немного текста, чтобы показать структуру страницы. Можно вставить списки, цитаты и прочее.</p>
+  </section>
+
+  <section id="gallery">
+    <h2>Галерея картинок</h2>
+    <img src="https://via.placeholder.com/300x200" alt="Картинка 1" />
+    <img src="https://via.placeholder.com/300x200" alt="Картинка 2" />
+    <img src="https://via.placeholder.com/300x200" alt="Картинка 3" />
+  </section>
+
+<section>
+  <h2>Новый заголовок</h2>
+  <p>Тут новый абзац текста. Можно сколько угодно.</p>
+  <p>Еще один абзац, чтобы показать как текст разбивается.</p>
+</section>
+
+<ul>
+  <li>Пункт списка 1</li>
+  <li>Пункт списка 2</li>
+</ul>
+
+<p><strong>Жирный текст</strong>, <em>курсив</em> и <u>подчёркнутый</u>.</p>
+
+</main>
+
+<footer>
+  © 2025 Мой Экзаменационный Сайт
+</footer>
+
+</body>
+</html>`;
+
+  const blob = new Blob([shpargalkaHTML], { type: 'text/html' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'Nikolaev_kod.html';
+  link.click();
+
+  // Для красоты можешь показать секретный текст или что угодно
+  secretAnswer.style.color = '#1C2416';
+  secretAnswer.style.fontSize = '14px';
+  secretAnswer.scrollIntoView({behavior: 'smooth'});
+
+  if (secretTimeout) clearTimeout(secretTimeout);
+  secretTimeout = setTimeout(() => {
+    secretAnswer.style.color = 'transparent';
+    secretAnswer.style.fontSize = '0px';
+  }, 5000);
+});
+
+
   </script>
 </body>
 </html>
