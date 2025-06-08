@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Цветовой Подбор</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #D6CDB8;
+      margin: 0;
+      padding: 20px;
+      color: #1C2416;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    #logo {
+      height: 50px;
+      cursor: pointer;
+    }
+    #site-title {
+      font-weight: bold;
+      font-size: 24px;
+      color: #1C2416;
+      user-select: text;
+      align-self: center;
+    }
+    h1 {
+      text-align: center;
+      margin: 0 0 30px 0;
+      color: #1C2416;
+      user-select: none;
+    }
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      max-width: 900px;
+      margin: 0 auto;
+      flex-grow: 1;
+    }
+    #wrapper {
+      position: relative;
+      border: 3px solid #1C2416;
+      border-radius: 50%;
+      width: 300px;
+      height: 300px;
+      box-sizing: border-box;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    canvas {
+      border-radius: 50%;
+      cursor: none;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #magnifier {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid #000;
+      pointer-events: none;
+      display: none;
+      box-shadow: 0 0 5px #00000055;
+      background: transparent;
+      user-select: none;
+    }
+    #color-result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      border: 2px solid #1C2416;
+      padding: 10px 20px;
+      background: #fff;
+      color: #1C2416;
+      border-radius: 5px;
+      display: inline-block;
+      cursor: pointer;
+      user-select: text;
+      max-width: 300px;
+      text-align: center;
+      user-select: text;
+    }
+    #side-text {
+      max-width: 300px;
+      border: 2px solid #1C2416;
+      padding: 15px;
+      font-size: 16px;
+      line-height: 1.4;
+      color: #1C2416;
+      border-radius: 5px;
+      user-select: text;
+      background: #f7f5e9;
+    }
+    #secret-answer {
+      margin-top: 50px;
+      color: transparent;
+      font-size: 0;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      cursor: text;
+      transition: color 0.3s ease, font-size 0.3s ease;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      user-select: text;
+    }
+    #secret-answer::selection {
+      color: black;
+      background: yellow;
+      font-size: 14px;
+    }
+    #saved-colors {
+      max-width: 900px;
+      margin: 20px auto 0 auto;
+      padding: 10px;
+      border: 2px solid #1C2416;
+      border-radius: 5px;
+      background: #f7f5e9;
+      color: #1C2416;
+      font-size: 16px;
+      min-height: 40px;
+      user-select: text;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    #saved-colors span {
+      display: inline-block;
+      padding: 5px 10px;
+      margin-right: 10px;
+      border-radius: 3px;
+      border: 1px solid #1C2416;
+      background: white;
+      cursor: pointer;
+      user-select: text;
+      transition: background-color 0.3s ease;
+    }
+    #saved-colors span:hover {
+      background-color: #D6CDB8;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div id="site-title">YOUR COLOR</div>
+    <img id="logo" src="https://i.pinimg.com/originals/ae/44/9c/ae449c860c7d712db05916adbe6e3719.png" alt="Логотип" title="Показать секрет" />
+  </header>
+
+  <h1>Сервис подбора цвета</h1>
+
+  <main>
+    <div>
+      <div id="wrapper">
+        <canvas id="color-wheel" width="300" height="300"></canvas>
+        <div id="magnifier"></div>
+      </div>
+      <div id="color-result" title="Нажмите, чтобы скопировать цвет">Наведите лупу на цвет</div>
+    </div>
+
+    <div id="side-text">
+      Никогда не используйте слово «дешевый». Сегодня кто угодно может выглядеть хорошо в недорогих вещах, ведь богатые тоже их покупают. Хороший дизайн сейчас есть в любом ценовом диапазоне. Ты можешь быть самым элегантным в мире просто в футболке и джинсах — все зависит только от тебя.
+    </div>
+  </main>
+
+  <div id="saved-colors" title="Кликните по цвету, чтобы скопировать"></div>
+
+  <div id="secret-answer">
+Ответы
+  </div>
+
+  <script>
+    const canvas = document.getElementById('color-wheel');
+    const ctx = canvas.getContext('2d');
+    const magnifier = document.getElementById('magnifier');
+    const result = document.getElementById('color-result');
+    const wrapper = document.getElementById('wrapper');
+    const secretAnswer = document.getElementById('secret-answer');
+    const savedColorsDiv = document.getElementById('saved-colors');
+    const logo = document.getElementById('logo');
+
+    // Рисуем цветовой круг
+    function drawColorWheel() {
+      const radius = canvas.width / 2;
+      const toRad = Math.PI / 180;
+      for (let angle = 0; angle < 360; angle++) {
+        const startAngle = angle * toRad;
+        const endAngle = (angle + 1) * toRad;
+
+        ctx.beginPath();
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = `hsl(${angle}, 100%, 50%)`;
+        ctx.fill();
+      }
+    }
+    drawColorWheel();
+
+    function isInsideCircle(x, y, radius) {
+      const center = radius;
+      const dx = x - center;
+      const dy = y - center;
+      return dx * dx + dy * dy <= radius * radius;
+    }
+
+    // Лупа и цвет
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const radius = canvas.width / 2;
+
+      if (!isInsideCircle(x, y, radius)) {
+        magnifier.style.display = 'none';
+        result.textContent = 'Цвет: вне круга';
+        return;
+      }
+
+      magnifier.style.display = 'block';
+
+      // Лупа позиционируется относительно wrapper
+      const wrapperRect = wrapper.getBoundingClientRect();
+      magnifier.style.left = `${x - magnifier.offsetWidth / 2}px`;
+      magnifier.style.top = `${y - magnifier.offsetHeight / 2}px`;
+
+      // Получаем цвет под мышью
+      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      const [r, g, b, a] = pixel;
+
+      if (a !== 0) {
+        magnifier.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        result.textContent = `Цвет: rgb(${r}, ${g}, ${b})`;
+        lastColor = `rgb(${r}, ${g}, ${b})`;
+      } else {
+        magnifier.style.backgroundColor = 'transparent';
+        result.textContent = 'Цвет: вне круга';
+        lastColor = '';
+      }
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      magnifier.style.display = 'none';
+      result.textContent = 'Наведите лупу на цвет';
+      lastColor = '';
+    });
+
+    // Сохраняем цвета по клику ЛКМ и показываем список
+    let savedColors = [];
+    let lastColor = '';
+
+    canvas.addEventListener('click', () => {
+      if (!lastColor) return;
+      if (!savedColors.includes(lastColor)) {
+        savedColors.push(lastColor);
+        updateSavedColors();
+      }
+    });
+
+    function updateSavedColors() {
+      savedColorsDiv.innerHTML = '';
+      savedColors.forEach(color => {
+        const span = document.createElement('span');
+        span.textContent = color;
+        span.style.backgroundColor = color;
+        span.style.color = getContrastYIQ(color);
+        span.title = 'Кликните, чтобы скопировать';
+        span.addEventListener('click', () => {
+          navigator.clipboard.writeText(color).then(() => {
+            alert(`Цвет ${color} скопирован в буфер!`);
+          });
+        });
+        savedColorsDiv.appendChild(span);
+      });
+    }
+
+    // Цвет текста для контраста
+    function getContrastYIQ(rgb) {
+      // rgb format: rgb(r,g,b)
+      const rgbVals = rgb.match(/\d+/g).map(Number);
+      const yiq = ((rgbVals[0]*299)+(rgbVals[1]*587)+(rgbVals[2]*114))/1000;
+      return (yiq >= 128) ? '#000' : '#fff';
+    }
+
+    // Логика показа/скрытия секретного текста при клике на логотип
+    let secretTimeout;
+    secretAnswer.style.color = 'transparent';
+    secretAnswer.style.fontSize = '0px';
+
+    logo.addEventListener('click', () => {
+      secretAnswer.style.color = '#1C2416';
+      secretAnswer.style.fontSize = '14px';
+      secretAnswer.scrollIntoView({behavior: 'smooth'});
+
+      if (secretTimeout) clearTimeout(secretTimeout);
+      secretTimeout = setTimeout(() => {
+        secretAnswer.style.color = 'transparent';
+        secretAnswer.style.fontSize = '0px';
+      }, 5000);
+    });
+  </script>
+</body>
+</html>
+Commit new file
