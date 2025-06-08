@@ -378,6 +378,24 @@
   <li>Пункт списка 2</li>
 </ul>
 
+Или, если хочешь, чтобы это был именно ссылка в виде кнопки (чтобы открывалась по клику, и можно было стилизовать):
+<a href="https://example.com" class="button-link">Перейти</a>
+
+<style>
+  .button-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #1C2416;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .button-link:hover {
+    background-color: #333;
+  }
+</style>
+
 <p><strong>Жирный текст</strong>, <em>курсив</em> и <u>подчёркнутый</u>.</p>
 
 </main>
@@ -406,6 +424,7 @@
     secretAnswer.style.fontSize = '0px';
   }, 5000);
 });
+
 
 
   </script>
